@@ -6,17 +6,22 @@ const {
   addProperty,
   getMyProperties,
   updateProperty,
-  deleteProperty
+  deleteProperty,
+  getAllAvailableProperties // ✅ NEW: Import
 } = require("../controllers/propertyController");
 
 const verifyToken = require("../middleware/authMiddleware"); // ✅ Correct import
 
-// ✅ Secure routes with middleware
+// ✅ Secure routes for owners
 router.post("/add", verifyToken, addProperty);
 router.get("/my-properties", verifyToken, getMyProperties);
 router.put("/update/:id", verifyToken, updateProperty);
 router.delete("/delete/:id", verifyToken, deleteProperty);
-// Get property by ID (used for bookings display)
+
+// ✅ NEW: Public route for renters to get available properties
+router.get("/available", getAllAvailableProperties);
+
+// ✅ Get single property by ID (for bookings/details)
 router.get("/:id", async (req, res) => {
   try {
     const property = await Property.findById(req.params.id);
@@ -26,6 +31,5 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
 
 module.exports = router;

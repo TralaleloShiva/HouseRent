@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+
 const {
   bookProperty,
   getMyBookings,
@@ -7,18 +8,17 @@ const {
   updateBookingStatus,
 } = require("../controllers/bookingController");
 
+const {
+  getAllAvailableProperties, // ✅ Import added here
+} = require("../controllers/propertyController"); // ✅ Assuming it's defined here
+
 const authenticate = require("../middleware/authMiddleware");
 
-// Renter books a property
+// Routes
 router.post("/book", authenticate, bookProperty);
-
-// Renter views their bookings
 router.get("/my-bookings", authenticate, getMyBookings);
-
-// Owner views all bookings on their properties
 router.get("/owner-bookings", authenticate, getBookingsForOwner);
-
-// Owner updates booking status
-router.put("/update-status/:id", authenticate, updateBookingStatus);
+router.get("/properties", authenticate, getAllAvailableProperties); // ✅ This now works
+router.put("/update-booking/:id", authenticate, updateBookingStatus);
 
 module.exports = router;

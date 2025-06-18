@@ -1,4 +1,5 @@
 const Booking = require("../config/models/BookingModel");
+const Property = require("../config/models/PropertyModel"); // ✅ Needed for fetching available properties
 
 // 📌 Renter books a property
 const bookProperty = async (req, res) => {
@@ -55,12 +56,23 @@ const updateBookingStatus = async (req, res) => {
 // 📌 Renter gets all their bookings
 const getMyBookings = async (req, res) => {
   try {
-    console.log("🔍 Decoded user from JWT:", req.user); // debug log
-
     const userId = req.user.userId;
-    const bookings = await Booking.find({ userId }).sort({ createdAt: -1 });
+    const bookings = await Booking.find({ userId })
+      .populate("propertyId")
+      .populate("ownerId")
+      .sort({ createdAt: -1 });
 
     res.json(bookings);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// 📌 Fetch all available properties (for Renter Dashboard)
+const getAllAvailableProperties = async (req, res) => {
+  try {
+    const properties = await Property.find({ isAvailable: true }).sort({ createdAt: -1 });
+    res.json(properties);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -71,4 +83,5 @@ module.exports = {
   getBookingsForOwner,
   updateBookingStatus,
   getMyBookings,
+  getAllAvailableProperties, // ✅ Include it here
 };

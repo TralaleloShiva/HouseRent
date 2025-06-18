@@ -1,6 +1,6 @@
 const Property = require("../config/models/PropertyModel");
 
-// ADD Property
+// ✅ ADD Property
 const addProperty = async (req, res) => {
   const { prop, isAvailable, ownerContact, addInfo } = req.body;
 
@@ -20,17 +20,17 @@ const addProperty = async (req, res) => {
   }
 };
 
-// GET all properties of logged-in user
+// ✅ GET all properties of logged-in owner
 const getMyProperties = async (req, res) => {
   try {
-    const properties = await Property.find({ userID: req.user.userId });
+    const properties = await Property.find({ userId: req.user.userId });  // ✅ fixed key from userID → userId
     res.json(properties);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// UPDATE Property
+// ✅ UPDATE Property
 const updateProperty = async (req, res) => {
   const propertyId = req.params.id;
   try {
@@ -41,7 +41,7 @@ const updateProperty = async (req, res) => {
   }
 };
 
-// DELETE Property
+// ✅ DELETE Property
 const deleteProperty = async (req, res) => {
   const propertyId = req.params.id;
   try {
@@ -52,9 +52,20 @@ const deleteProperty = async (req, res) => {
   }
 };
 
+// ✅ NEW: Get all available properties (for Renters Dashboard)
+const getAllAvailableProperties = async (req, res) => {
+  try {
+    const properties = await Property.find({ isAvailable: true });
+    res.json(properties);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch properties", error: err.message });
+  }
+};
+
 module.exports = {
   addProperty,
   getMyProperties,
   updateProperty,
-  deleteProperty
+  deleteProperty,
+  getAllAvailableProperties  // ✅ Export the new function
 };
